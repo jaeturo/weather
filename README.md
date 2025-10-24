@@ -66,18 +66,74 @@ streamlit run weather_app.py
 
 ```
 weather/
-├── weather_app.py      # 메인 Streamlit 애플리케이션
-├── config.py          # API 설정 파일 (Git에 업로드하지 마세요)
-├── requirements.txt    # Python 의존성 목록
-├── .gitignore         # Git 무시 파일 목록
-└── README.md          # 프로젝트 설명서
+├── weather_app.py                    # 메인 Streamlit 애플리케이션
+├── config.py                        # API 설정 파일 (Git에 업로드하지 마세요)
+├── requirements.txt                  # Python 의존성 목록
+├── .gitignore                       # Git 무시 파일 목록
+├── README.md                        # 프로젝트 설명서
+├── SECURITY_CHECKLIST.md            # 보안 체크리스트
+├── .streamlit/
+│   ├── config.toml                  # Streamlit 설정 파일
+│   └── secrets.toml                 # 로컬 개발용 secrets 파일
+├── streamlit_secrets_template.toml  # Streamlit 클라우드용 secrets 템플릿
+└── images/                          # 날씨 이미지 폴더
+    ├── rain.jpg
+    ├── snow.jpg
+    ├── sun.jpg
+    └── cloud.jpg
 ```
+
+## 🚀 Streamlit 클라우드 배포
+
+### 1. GitHub에 코드 업로드
+```bash
+git add .
+git commit -m "Add weather app"
+git push origin main
+```
+
+### 2. Streamlit 클라우드에서 배포
+1. [Streamlit Cloud](https://share.streamlit.io/)에 접속
+2. "New app" 클릭
+3. GitHub 저장소 연결
+4. 메인 파일 경로: `weather_app.py`
+5. "Deploy!" 클릭
+
+### 3. 환경변수 설정 (필수)
+Streamlit 클라우드에서 환경변수를 설정해야 합니다:
+
+#### 방법 1: Streamlit 클라우드 Secrets 탭 사용
+1. 앱 설정 → "Secrets" 탭
+2. `OPENWEATHER_API_KEY` 추가
+3. API 키 값 입력
+
+#### 방법 2: TOML 파일 사용 (권장)
+1. **로컬 개발 시**: `.streamlit/secrets.toml` 파일에서 API 키 설정
+2. **Streamlit 클라우드 배포 시**: 
+   - `streamlit_secrets_template.toml` 파일을 참고
+   - "Secrets" 탭에 TOML 형식으로 입력:
+   ```toml
+   OPENWEATHER_API_KEY = "your_api_key_here"
+   ```
+
+### 4. API 키 발급 및 설정
+1. [OpenWeather API](https://openweathermap.org/api)에 가입
+2. 무료 API 키 발급
+3. 위의 방법으로 API 키 설정
+
+**중요**: API 키는 반드시 환경변수로 설정해야 합니다. 코드에 직접 포함하면 보안에 문제가 됩니다.
 
 ## 🔒 보안 주의사항
 
-- **API 키 보안**: `config.py` 파일은 Git에 업로드하지 마세요
-- **환경변수 사용**: 프로덕션 환경에서는 환경변수를 사용하여 API 키를 관리하세요
+- **API 키 보안**: 
+  - ❌ **절대 코드에 API 키를 직접 포함하지 마세요**
+  - ✅ **반드시 환경변수를 사용하여 API 키를 관리하세요**
+  - ✅ **Git에 API 키가 포함된 파일을 업로드하지 마세요**
 - **.gitignore**: 민감한 정보가 포함된 파일들이 Git에 업로드되지 않도록 `.gitignore` 파일을 확인하세요
+- **API 키 관리**: 
+  - 정기적으로 API 키를 갱신하세요
+  - 사용하지 않는 API 키는 비활성화하세요
+  - API 키 사용량을 모니터링하세요
 
 ## 🌐 API 정보
 

@@ -18,14 +18,45 @@ st.set_page_config(
 )
 
 # OpenWeather API 설정
-# 환경변수에서 API 키를 가져오고, 없으면 config.py에서 가져옴
+# 1. 환경변수에서 API 키를 가져옴
+# 2. 없으면 Streamlit secrets에서 가져옴
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
+
 if not API_KEY:
     try:
-        from config import OPENWEATHER_API_KEY
-        API_KEY = OPENWEATHER_API_KEY
-    except ImportError:
-        st.error("❌ API 키를 찾을 수 없습니다. 환경변수 OPENWEATHER_API_KEY를 설정하거나 config.py 파일을 확인해주세요.")
+        # Streamlit secrets에서 API 키 가져오기
+        API_KEY = st.secrets["OPENWEATHER_API_KEY"]
+    except (KeyError, FileNotFoundError):
+        st.error("❌ API 키를 찾을 수 없습니다.")
+        st.info("""
+        **API 키 설정 방법:**
+        
+        **로컬 실행 시:**
+        1. `.streamlit/secrets.toml` 파일에서 `OPENWEATHER_API_KEY = "your_api_key_here"` 수정
+        2. 또는 환경변수 설정:
+        ```bash
+        # Windows (PowerShell)
+        $env:OPENWEATHER_API_KEY="your_api_key_here"
+        
+        # Windows (Command Prompt)
+        set OPENWEATHER_API_KEY=your_api_key_here
+        
+        # Linux/Mac
+        export OPENWEATHER_API_KEY="your_api_key_here"
+        ```
+        
+        **Streamlit 클라우드 배포 시:**
+        1. 앱 설정 → "Secrets" 탭
+        2. TOML 형식으로 입력:
+        ```toml
+        OPENWEATHER_API_KEY = "your_api_key_here"
+        ```
+        
+        **API 키 발급:**
+        1. [OpenWeather API](https://openweathermap.org/api)에 가입
+        2. 무료 API 키 발급
+        3. 위의 방법으로 API 키 설정
+        """)
         st.stop()
 
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
@@ -61,6 +92,20 @@ KOREAN_CITIES = {
     "이천": "Icheon,KR",
     "안성": "Anseong,KR",
     "김포": "Gimpo-si,KR",
+    "김포본동": "Gimpo,KR",
+    "장기본동": "Gimpo,KR",
+    "사우동": "Gimpo,KR",
+    "풍무동": "Gimpo,KR",
+    "장기동": "Gimpo,KR",
+    "구래동": "Gimpo,KR",
+    "마산동": "Gimpo,KR",
+    "운양동": "Gimpo,KR",
+    "통진읍": "Gimpo,KR",
+    "고촌읍": "Gimpo,KR",
+    "양촌읍": "Gimpo,KR",
+    "대곶면": "Gimpo,KR",
+    "월곶면": "Gimpo,KR",
+    "하성면": "Gimpo,KR",
     "화성": "Hwaseong,KR",
     "여주": "Yeoju,KR",
     "양평": "Yangpyeong,KR",
@@ -304,12 +349,51 @@ def set_background_image(image_path):
         
         /* 메트릭 카드 스타일 */
         .metric-card {{
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
             margin: 0.5rem 0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s ease;
+        }}
+        
+        .metric-card:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }}
+        
+        /* 메인 컨테이너 스타일 */
+        .main-container {{
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1rem 0;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }}
+        
+        /* 제목 스타일 */
+        .weather-title {{
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            margin: 1rem 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }}
+        
+        /* 서브제목 스타일 */
+        .weather-subtitle {{
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }}
         
         /* 사이드바 스타일 */
@@ -355,9 +439,9 @@ def create_weather_card(title, value, unit="", icon=""):
     card_html = f"""
     <div class="metric-card">
         <div style="text-align: center;">
-            <div style="font-size: 2rem; margin-bottom: 0.5rem;">{icon}</div>
-            <div style="font-size: 1.5rem; font-weight: bold; color: #2c3e50; margin-bottom: 0.25rem;">{value}{unit}</div>
-            <div style="font-size: 0.9rem; color: #7f8c8d;">{title}</div>
+            <div style="font-size: 2.5rem; margin-bottom: 0.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">{icon}</div>
+            <div style="font-size: 1.8rem; font-weight: bold; color: #2c3e50; margin-bottom: 0.5rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">{value}{unit}</div>
+            <div style="font-size: 1rem; color: #34495e; font-weight: 600; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">{title}</div>
         </div>
     </div>
     """
@@ -640,9 +724,27 @@ def get_korean_city_name(english_city_name):
 def get_weather(city_input):
     """OpenWeather API에서 날씨 정보를 가져오는 함수"""
     try:
+        # API 키 확인
+        if not API_KEY:
+            st.error("❌ API 키가 설정되지 않았습니다.")
+            return None
         # 도시별 대안 이름 정의
         alternative_city_names = {
             "김포": ["Gimpo-si,KR", "Gimpo,KR", "Gimpo-si", "Gimpo"],
+            "김포본동": ["Gimpo,KR", "Gimpo-si,KR"],
+            "장기본동": ["Gimpo,KR", "Gimpo-si,KR"],
+            "사우동": ["Gimpo,KR", "Gimpo-si,KR"],
+            "풍무동": ["Gimpo,KR", "Gimpo-si,KR"],
+            "장기동": ["Gimpo,KR", "Gimpo-si,KR"],
+            "구래동": ["Gimpo,KR", "Gimpo-si,KR"],
+            "마산동": ["Gimpo,KR", "Gimpo-si,KR"],
+            "운양동": ["Gimpo,KR", "Gimpo-si,KR"],
+            "통진읍": ["Gimpo,KR", "Gimpo-si,KR"],
+            "고촌읍": ["Gimpo,KR", "Gimpo-si,KR"],
+            "양촌읍": ["Gimpo,KR", "Gimpo-si,KR"],
+            "대곶면": ["Gimpo,KR", "Gimpo-si,KR"],
+            "월곶면": ["Gimpo,KR", "Gimpo-si,KR"],
+            "하성면": ["Gimpo,KR", "Gimpo-si,KR"],
             "화성": ["Hwaseong-si,KR", "Hwaseong,KR", "Hwaseong-si", "Hwaseong"],
             "시흥": ["Siheung-si,KR", "Siheung,KR", "Siheung-si", "Siheung"],
             "군포": ["Gunpo-si,KR", "Gunpo,KR", "Gunpo-si", "Gunpo"],
@@ -718,6 +820,7 @@ def get_weather(city_input):
                         'lang': 'kr'
                     }
                     response = requests.get(BASE_URL, params=params, timeout=10)
+                    
                     if response.status_code == 200:
                         weather_data = response.json()
                         # 필수 데이터 검증
@@ -848,14 +951,32 @@ def display_weather(weather_data):
         # 기본 배경 이미지 사용
         set_background_image('images/sun.jpeg')
     
-    # 메인 제목 (한글 도시명 사용)
-    st.title(f"{get_weather_icon(weather_icon)} {korean_city_name}")
+    # 메인 제목을 블록으로 표시
+    st.markdown(f"""
+    <div class="weather-title">
+        <h1 style="margin: 0; color: #2c3e50; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            {get_weather_icon(weather_icon)} {korean_city_name}
+        </h1>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # 날씨 설명
-    st.subheader(f"날씨: {description.title()}")
+    # 날씨 설명을 블록으로 표시
+    st.markdown(f"""
+    <div class="weather-subtitle">
+        <h2 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+            날씨: {description.title()}
+        </h2>
+    </div>
+    """, unsafe_allow_html=True)
     
     # 날씨 정보를 카드 형태로 표시
-    st.markdown("### 📊 상세 날씨 정보")
+    st.markdown("""
+    <div class="weather-subtitle">
+        <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+            📊 상세 날씨 정보
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
     
     # 첫 번째 행 - 온도 관련
     col1, col2, col3, col4 = st.columns(4)
@@ -914,32 +1035,74 @@ def display_weather(weather_data):
         clouds_display = f"{clouds}" if clouds != 0 else "N/A"
         st.markdown(create_weather_card("구름량", clouds_display, "%", "☁️"), unsafe_allow_html=True)
     
-    # 추가 정보
-    with st.expander("📊 상세 정보"):
+    # 추가 정보를 블록으로 표시
+    st.markdown("""
+    <div class="main-container">
+        <div class="weather-subtitle">
+            <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                📊 상세 정보
+            </h3>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style="color: #2c3e50; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); margin-bottom: 1rem;">📍 위치 정보</h4>
+            <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 도시: {korean_city_name}</p>
+            <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 국가: {country}</p>
+            <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 위도: {weather_data['coord']['lat']:.4f}°</p>
+            <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 경도: {weather_data['coord']['lon']:.4f}°</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+        <div class="metric-card">
+            <h4 style="color: #2c3e50; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); margin-bottom: 1rem;">🌤️ 날씨 상세</h4>
+            <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 날씨 ID: {weather_data['weather'][0]['id']}</p>
+            <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 날씨 메인: {weather_data['weather'][0]['main']}</p>
+            <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 구름량: {clouds}%</p>
+            <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 가시거리: {visibility:.1f} km</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    # 강수량 정보를 블록으로 표시 (있는 경우)
+    if 'rain' in weather_data or 'snow' in weather_data:
+        st.markdown("""
+        <div class="main-container">
+            <div class="weather-subtitle">
+                <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                    🌧️ 강수/적설 정보
+                </h3>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
         col1, col2 = st.columns(2)
         
         with col1:
-            st.write("**위치 정보**")
-            st.write(f"• 도시: {korean_city_name}")
-            st.write(f"• 국가: {country}")
-            st.write(f"• 위도: {weather_data['coord']['lat']:.4f}°")
-            st.write(f"• 경도: {weather_data['coord']['lon']:.4f}°")
+            if 'rain' in weather_data:
+                rain_1h = weather_data['rain'].get('1h', 0)
+                st.markdown(f"""
+                <div class="metric-card">
+                    <h4 style="color: #2c3e50; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); margin-bottom: 1rem;">🌧️ 강수량</h4>
+                    <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 1시간 강수량: {rain_1h} mm</p>
+                </div>
+                """, unsafe_allow_html=True)
         
         with col2:
-            st.write("**날씨 상세**")
-            st.write(f"• 날씨 ID: {weather_data['weather'][0]['id']}")
-            st.write(f"• 날씨 메인: {weather_data['weather'][0]['main']}")
-            st.write(f"• 구름량: {clouds}%")
-            st.write(f"• 가시거리: {visibility:.1f} km")
-        
-        # 강수량 정보 (있는 경우)
-        if 'rain' in weather_data:
-            rain_1h = weather_data['rain'].get('1h', 0)
-            st.write(f"• 1시간 강수량: {rain_1h} mm")
-        
-        if 'snow' in weather_data:
-            snow_1h = weather_data['snow'].get('1h', 0)
-            st.write(f"• 1시간 적설량: {snow_1h} mm")
+            if 'snow' in weather_data:
+                snow_1h = weather_data['snow'].get('1h', 0)
+                st.markdown(f"""
+                <div class="metric-card">
+                    <h4 style="color: #2c3e50; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); margin-bottom: 1rem;">❄️ 적설량</h4>
+                    <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 1시간 적설량: {snow_1h} mm</p>
+                </div>
+                """, unsafe_allow_html=True)
 
 def get_city_categories():
     """도시를 시/군/구와 동/읍/면으로 분류하는 함수"""
@@ -994,12 +1157,32 @@ def get_city_categories():
 
 def main():
     """메인 함수"""
-    # 제목
-    st.title("🌤️ 한국 날씨 정보")
-    st.markdown("한국의 모든 도시 날씨를 실시간으로 확인하세요!")
+    # 제목을 블록으로 표시
+    st.markdown("""
+    <div class="weather-title">
+        <h1 style="margin: 0; color: #2c3e50; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            🌤️ 한국 날씨 정보
+        </h1>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # 사이드바
-    st.sidebar.title("🔍 날씨 검색")
+    # 설명 텍스트를 블록으로 표시
+    st.markdown("""
+    <div class="weather-subtitle">
+        <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+            한국의 모든 도시 날씨를 실시간으로 확인하세요!
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # 사이드바 제목을 블록으로 표시
+    st.sidebar.markdown("""
+    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 10px; padding: 1rem; margin: 1rem 0; text-align: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
+        <h2 style="margin: 0; color: #2c3e50; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+            🔍 날씨 검색
+        </h2>
+    </div>
+    """, unsafe_allow_html=True)
     
     # 도시 입력 (기존 방식 유지)
     city = st.sidebar.text_input(
@@ -1021,7 +1204,13 @@ def main():
     
     # 드롭박스 기반 도시 선택
     st.sidebar.markdown("---")
-    st.sidebar.subheader("🗺️ 지역별 도시 선택")
+    st.sidebar.markdown("""
+    <div style="background-color: rgba(255, 255, 255, 0.85); border-radius: 8px; padding: 0.8rem; margin: 0.5rem 0; text-align: center; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);">
+        <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+            🗺️ 지역별 도시 선택
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
     
     # 도시 분류 (시/군/구와 동/읍/면으로 구분)
     city_hierarchy = {
@@ -1274,48 +1463,49 @@ def main():
         "경기도": {
             "수원시": {
                 "영통구": {
-                    "동": ["영통동", "망포동", "신동", "하동", "원천동", "영통동", "망포동", "신동", "하동", "원천동"]
+                    "동": ["영통동", "망포동", "신동", "하동", "원천동"]
                 },
                 "장안구": {
-                    "동": ["파장동", "영화동", "송죽동", "조원동", "연무동", "파장동", "영화동", "송죽동", "조원동", "연무동"]
+                    "동": ["파장동", "영화동", "송죽동", "조원동", "연무동"]
                 },
                 "권선구": {
-                    "동": ["세류동", "평동", "서둔동", "구운동", "금곡동", "호매실동", "세류동", "평동", "서둔동", "구운동", "금곡동", "호매실동"]
+                    "동": ["세류동", "평동", "서둔동", "구운동", "금곡동", "호매실동"]
                 },
                 "팔달구": {
-                    "동": ["매산동", "고등동", "우만동", "인계동", "매산동", "고등동", "우만동", "인계동"]
+                    "동": ["매산동", "고등동", "우만동", "인계동"]
                 }
             },
             "성남시": {
                 "분당구": {
-                    "동": ["정자동", "서현동", "이매동", "야탑동", "수내동", "정자동", "서현동", "이매동", "야탑동", "수내동"]
+                    "동": ["정자동", "서현동", "이매동", "야탑동", "수내동"]
                 },
                 "수정구": {
-                    "동": ["수진동", "신흥동", "단대동", "산성동", "수진동", "신흥동", "단대동", "산성동"]
+                    "동": ["수진동", "신흥동", "단대동", "산성동"]
                 },
                 "중원구": {
-                    "동": ["성남동", "중앙동", "금광동", "은행동", "성남동", "중앙동", "금광동", "은행동"]
+                    "동": ["성남동", "중앙동", "금광동", "은행동"]
                 }
             },
             "의정부시": {
-                "동": ["의정부동", "호원동", "장암동", "신곡동", "자금동", "가능동", "녹양동", "의정부동", "호원동", "장암동", "신곡동", "자금동", "가능동", "녹양동"]
+                "동": ["의정부동", "호원동", "장암동", "신곡동", "자금동", "가능동", "녹양동"]
             },
             "안양시": {
                 "동안구": {
-                    "동": ["비산동", "관양동", "평촌동", "호계동", "비산동", "관양동", "평촌동", "호계동"]
+                    "동": ["비산동", "관양동", "평촌동", "호계동"]
                 },
                 "만안구": {
-                    "동": ["안양동", "석수동", "박달동", "안양동", "석수동", "박달동"]
+                    "동": ["안양동", "석수동", "박달동"]
                 }
             },
             "부천시": {
-                "동": ["원미동", "소사동", "오정동", "원미동", "소사동", "오정동"]
+                "동": ["원미동", "소사동", "오정동"]
             },
             "광명시": {
                 "시": ["광명시"]
             },
             "평택시": {
-                "시": ["평택시"]
+                "읍": ["평택읍", "서탄읍", "청북읍", "진위읍", "오성읍", "현덕읍"],
+                "면": ["팽성읍", "고덕면", "청담면", "비전면", "신평면", "원평면", "유천면", "통복면", "죽백면", "장당면"]
             },
             "과천시": {
                 "시": ["과천시"]
@@ -1361,16 +1551,19 @@ def main():
                 "면": ["금광면", "원곡면", "일죽면", "죽산면", "삼죽면", "고삼면", "양성면", "미양면", "대덕면", "보개면", "서운면"]
             },
             "김포시": {
-                "읍": ["김포읍", "통진읍", "고촌읍"],
-                "면": ["양촌면", "대곶면", "월곶면", "하성면"]
+                "읍": ["통진읍", "고촌읍", "양촌읍"],
+                "면": ["대곶면", "월곶면", "하성면"],
+                "동": ["김포본동", "장기본동", "사우동", "풍무동", "장기동", "구래동", "마산동", "운양동"]
             },
             "화성시": {
                 "읍": ["봉담읍", "우정읍", "향남읍", "남양읍", "매송읍", "비봉읍", "정남읍", "동탄읍"],
-                "면": ["팔탄면", "장안면", "양감면", "정남면", "마도면", "송산면", "서신면"]
+                "면": ["팔탄면", "장안면", "양감면", "정남면", "마도면", "송산면", "서신면"],
+                "동": ["향남동", "동탄동", "반월동", "기산동", "반정동", "능동", "병점동", "석우동", "산척동", "송산동", "신동", "청계동", "오산동", "원천동", "진안동"]
             },
             "여주시": {
                 "읍": ["여주읍", "가남읍"],
-                "면": ["점동면", "흥천면", "능서면", "대신면", "북내면", "강천면", "산북면", "금사면", "세종면"]
+                "면": ["점동면", "흥천면", "능서면", "대신면", "북내면", "강천면", "산북면", "금사면", "세종면"],
+                "동": ["여주동", "중앙동", "오학동", "가남동", "점동동", "흥천동", "능서동", "대신동", "북내동", "강천동", "산북동", "금사동", "세종동"]
             },
             "양평군": {
                 "읍": ["양평읍"],
@@ -1389,28 +1582,33 @@ def main():
             },
             "양주시": {
                 "읍": ["양주읍", "회천읍"],
-                "면": ["은현면", "남면", "광적면", "장흥면"]
+                "면": ["은현면", "남면", "광적면", "장흥면"],
+                "동": ["양주동", "회천동", "덕정동", "옥정동", "고읍동", "덕계동"]
             },
             "구리시": {
                 "동": ["교문동", "수택동", "아천동", "인창동"]
             },
             "남양주시": {
                 "읍": ["와부읍", "조안읍", "오남읍", "별내읍"],
-                "면": ["수동면", "조안면", "퇴계원면", "화도면", "진접면", "진건면", "별내면"]
+                "면": ["수동면", "조안면", "퇴계원면", "화도면", "진접면", "진건면", "별내면"],
+                "동": ["금곡동", "평내동", "호평동", "도농동", "지금동"]
             },
             "포천시": {
                 "읍": ["포천읍", "소흘읍"],
-                "면": ["신북면", "창수면", "영중면", "일동면", "이동면", "영북면", "관인면", "화현면"]
+                "면": ["신북면", "창수면", "영중면", "일동면", "이동면", "영북면", "관인면", "화현면"],
+                "동": ["신읍동", "어룡동", "자작동", "선단동"]
             }
         },
         "강원도": {
             "춘천시": {
                 "읍": ["춘천읍"],
-                "면": ["신북면", "동면", "동산면", "신동면", "서면", "남면", "북면", "사북면", "사내면", "남산면", "교동면", "중도면", "동내면", "후평면", "신사우면", "강남면", "동면", "동산면", "신동면", "서면", "남면", "북면", "사북면", "사내면", "남산면", "교동면", "중도면", "동내면", "후평면", "신사우면", "강남면"]
+                "면": ["신북면", "동면", "동산면", "신동면", "서면", "남면", "북면", "사북면", "사내면", "남산면", "교동면", "중도면", "동내면", "후평면", "신사우면", "강남면"],
+                "동": ["약사동", "교동", "조운동", "근화동", "소양동", "후평동", "효자동", "석사동", "퇴계동", "온의동", "신사우동"]
             },
             "원주시": {
-                "읍": ["원주읍"],
-                "면": ["문막읍", "소초면", "호저면", "지정면", "부론면", "귀래면", "흥업면", "판부면", "신림면", "문막읍", "소초면", "호저면", "지정면", "부론면", "귀래면", "흥업면", "판부면", "신림면"]
+                "읍": ["원주읍", "문막읍"],
+                "면": ["소초면", "호저면", "지정면", "부론면", "귀래면", "흥업면", "판부면", "신림면"],
+                "동": ["일산동", "학성동", "단계동", "우산동", "태장동", "봉산동", "행구동", "무실동", "반곡동"]
             },
             "강릉시": {
                 "읍": ["강릉읍"],
@@ -1967,39 +2165,61 @@ def main():
             # 구/군/시 선택
             districts = city_hierarchy[selected_region][selected_city]
             if districts:
-                district_type = list(districts.keys())[0]  # 구, 시, 군 중 하나
-                district_list = districts[district_type]
-                
-                selected_district = st.sidebar.selectbox(
-                    f"🏘️ {district_type}을 선택하세요:",
-                    [f"{district_type}을 선택하세요"] + district_list
-                )
-                
-                # 동/읍/면 선택 (4단계)
-                if selected_district != f"{district_type}을 선택하세요":
-                    # 선택된 구/군/시에 동/읍/면 데이터가 있는지 확인
-                    if selected_district in city_hierarchy[selected_region][selected_city]:
-                        dong_data = city_hierarchy[selected_region][selected_city][selected_district]
-                        if dong_data:
-                            dong_type = list(dong_data.keys())[0]  # 동, 읍, 면 중 하나
-                            dong_list = dong_data[dong_type]
-                            
-                            selected_dong = st.sidebar.selectbox(
-                                f"🏠 {dong_type}을 선택하세요:",
-                                [f"{dong_type}을 선택하세요"] + dong_list
-                            )
+                # 김포시처럼 구가 없는 시인지 확인 (동/읍/면이 직접 시 하위에 있는 경우)
+                first_key = list(districts.keys())[0]
+                if first_key in ["읍", "면", "동"]:
+                    # 구가 없는 시 - 동/읍/면을 직접 선택
+                    all_dong_list = []
+                    for dong_type, dong_list in districts.items():
+                        all_dong_list.extend(dong_list)
+                    
+                    if all_dong_list:
+                        selected_dong = st.sidebar.selectbox(
+                            "🏠 동/읍/면을 선택하세요:",
+                            ["동/읍/면을 선택하세요"] + all_dong_list
+                        )
+                else:
+                    # 구가 있는 시 - 구를 먼저 선택
+                    district_type = first_key  # 구, 시, 군 중 하나
+                    district_list = list(districts.keys())  # 실제 구/군/시 이름들
+                    
+                    selected_district = st.sidebar.selectbox(
+                        f"🏘️ {district_type}을 선택하세요:",
+                        [f"{district_type}을 선택하세요"] + district_list
+                    )
+                    
+                    # 동/읍/면 선택 (4단계)
+                    if selected_district != f"{district_type}을 선택하세요":
+                        # 선택된 구/군/시에 동/읍/면 데이터가 있는지 확인
+                        if selected_district in city_hierarchy[selected_region][selected_city]:
+                            dong_data = city_hierarchy[selected_region][selected_city][selected_district]
+                            if dong_data and isinstance(dong_data, dict):
+                                # 모든 동/읍/면을 하나의 리스트로 합치기
+                                all_dong_list = []
+                                for dong_type, dong_list in dong_data.items():
+                                    all_dong_list.extend(dong_list)
+                                
+                                if all_dong_list:
+                                    selected_dong = st.sidebar.selectbox(
+                                        "🏠 동/읍/면을 선택하세요:",
+                                        ["동/읍/면을 선택하세요"] + all_dong_list
+                                    )
     
     # 검색 버튼
     if selected_region != "지역을 선택하세요" and selected_city != "시/군/구를 선택하세요":
         search_city = selected_city
         
-        # 구/군/시가 선택된 경우
+        # 구/군/시가 선택된 경우 (구가 있는 시)
         if selected_district and selected_district != f"{list(city_hierarchy[selected_region][selected_city].keys())[0]}을 선택하세요":
             search_city = selected_district
             
             # 동/읍/면이 선택된 경우
-            if selected_dong and selected_dong != f"{list(city_hierarchy[selected_region][selected_city][selected_district].keys())[0]}을 선택하세요":
+            if selected_dong and selected_dong != "동/읍/면을 선택하세요":
                 search_city = selected_dong
+        
+        # 구가 없는 시에서 동/읍/면이 선택된 경우
+        elif selected_dong and selected_dong != "동/읍/면을 선택하세요":
+            search_city = selected_dong
         
         if st.sidebar.button("🔍 선택한 지역 검색", type="primary"):
             with st.spinner(f"{search_city}의 날씨 정보를 가져오는 중..."):
@@ -2011,18 +2231,48 @@ def main():
     
     # 도시 검색 안내
     st.sidebar.markdown("---")
-    st.sidebar.markdown("**💡 4단계 지역 선택 팁**")
-    st.sidebar.info("• 1단계: 지역 선택 (특별시/광역시, 경기도 등)\n• 2단계: 시/군/구 선택 (서울특별시, 수원시 등)\n• 3단계: 구/군/시 선택 (강남구, 영통구 등)\n• 4단계: 동/읍/면 선택 (역삼동, 신림동 등)\n• 일부 도시는 여러 이름으로 자동 시도")
+    st.sidebar.markdown("""
+    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 1rem; margin: 0.5rem 0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
+        <h4 style="margin: 0 0 0.5rem 0; color: #2c3e50; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+            💡 4단계 지역 선택 팁
+        </h4>
+        <div style="background-color: rgba(52, 152, 219, 0.1); border-radius: 5px; padding: 0.8rem; border-left: 4px solid #3498db;">
+            <p style="margin: 0.2rem 0; color: #34495e; font-size: 0.9rem;">• 1단계: 지역 선택 (특별시/광역시, 경기도 등)</p>
+            <p style="margin: 0.2rem 0; color: #34495e; font-size: 0.9rem;">• 2단계: 시/군/구 선택 (서울특별시, 수원시 등)</p>
+            <p style="margin: 0.2rem 0; color: #34495e; font-size: 0.9rem;">• 3단계: 구/군/시 선택 (강남구, 영통구 등)</p>
+            <p style="margin: 0.2rem 0; color: #34495e; font-size: 0.9rem;">• 4단계: 동/읍/면 선택 (역삼동, 신림동 등)</p>
+            <p style="margin: 0.2rem 0; color: #34495e; font-size: 0.9rem;">• 일부 도시는 여러 이름으로 자동 시도</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # 사용법 안내
     if not city and not (selected_region != "지역을 선택하세요" and selected_city != "시/군/구를 선택하세요"):
-        st.info("👈 왼쪽 사이드바에서 지역을 선택하거나 직접 입력해보세요!")
         st.markdown("""
-        ### 🗺️ 4단계 드롭박스 기능
-        - **계층적 지역 선택**: 지역 → 시/군/구 → 구/군/시 → 동/읍/면 순서로 드롭박스 선택
-        - **정확한 지역 검색**: 구체적인 동/읍/면까지 선택 가능
-        - **체계적 분류**: 특별시/광역시, 경기도, 강원도 등으로 구분
-        - **세부 행정구역**: 서울 25개 구의 모든 동, 경기도 시/군의 읍/면까지 지원
+        <div class="main-container">
+            <div class="weather-subtitle">
+                <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                    👈 왼쪽 사이드바에서 지역을 선택하거나 직접 입력해보세요!
+                </h3>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div class="main-container">
+            <div class="weather-subtitle">
+                <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                    🗺️ 4단계 드롭박스 기능
+                </h3>
+            </div>
+            <div class="metric-card">
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>계층적 지역 선택</strong>: 지역 → 시/군/구 → 구/군/시 → 동/읍/면 순서로 드롭박스 선택</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>정확한 지역 검색</strong>: 구체적인 동/읍/면까지 선택 가능</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>체계적 분류</strong>: 특별시/광역시, 경기도, 강원도 등으로 구분</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>세부 행정구역</strong>: 서울 25개 구의 모든 동, 경기도 시/군의 읍/면까지 지원</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         ### 📍 지원하는 모든 지역 (동/읍/면까지 완전 지원)
         - **특별시/광역시**: 서울(25개 구의 모든 동), 부산(16개 구의 모든 동), 대구(8개 구의 모든 동), 인천(10개 구의 모든 동), 광주(5개 구의 모든 동), 대전(5개 구의 모든 동), 울산(5개 구의 모든 동), 세종
