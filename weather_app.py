@@ -374,26 +374,76 @@ def set_background_image(image_path):
             border: 1px solid rgba(255, 255, 255, 0.2);
         }}
         
-        /* 제목 스타일 */
+        /* 제목 스타일 - 강한 카드 형태 */
         .weather-title {{
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 1rem 2rem;
-            margin: 1rem 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem 3rem;
+            margin: 1.5rem 0;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            transition: transform 0.2s ease;
         }}
         
-        /* 서브제목 스타일 */
+        .weather-title:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+        }}
+        
+        /* 서브제목 스타일 - 강한 카드 형태 */
         .weather-subtitle {{
-            background-color: rgba(255, 255, 255, 0.85);
-            border-radius: 10px;
-            padding: 0.8rem 1.5rem;
-            margin: 0.5rem 0;
+            background-color: rgba(255, 255, 255, 0.92);
+            border-radius: 15px;
+            padding: 1.5rem 2rem;
+            margin: 1rem 0;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            transition: transform 0.2s ease;
+        }}
+        
+        .weather-subtitle:hover {{
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }}
+        
+        /* 강한 카드 스타일 - 메인 제목용 */
+        .strong-card {{
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            padding: 2.5rem 4rem;
+            margin: 2rem 0;
+            text-align: center;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            border: 4px solid rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }}
+        
+        .strong-card:hover {{
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+        }}
+        
+        /* 강한 카드 스타일 - 서브 제목용 */
+        .strong-subcard {{
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem 3rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(18px);
+            transition: all 0.3s ease;
+        }}
+        
+        .strong-subcard:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4);
         }}
         
         /* 사이드바 스타일 */
@@ -951,28 +1001,28 @@ def display_weather(weather_data):
         # 기본 배경 이미지 사용
         set_background_image('images/sun.jpeg')
     
-    # 메인 제목을 블록으로 표시
+    # 메인 제목을 강한 카드로 표시
     st.markdown(f"""
-    <div class="weather-title">
-        <h1 style="margin: 0; color: #2c3e50; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+    <div class="strong-card">
+        <h1 style="margin: 0; color: #2c3e50; text-shadow: 3px 3px 6px rgba(0,0,0,0.4); font-size: 2.5rem;">
             {get_weather_icon(weather_icon)} {korean_city_name}
         </h1>
     </div>
     """, unsafe_allow_html=True)
     
-    # 날씨 설명을 블록으로 표시
+    # 날씨 설명을 강한 카드로 표시
     st.markdown(f"""
-    <div class="weather-subtitle">
-        <h2 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+    <div class="strong-subcard">
+        <h2 style="margin: 0; color: #34495e; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-size: 1.5rem;">
             날씨: {description.title()}
         </h2>
     </div>
     """, unsafe_allow_html=True)
     
-    # 날씨 정보를 카드 형태로 표시
+    # 날씨 정보를 강한 카드로 표시
     st.markdown("""
-    <div class="weather-subtitle">
-        <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+    <div class="strong-subcard">
+        <h3 style="margin: 0; color: #34495e; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-size: 1.3rem;">
             📊 상세 날씨 정보
         </h3>
     </div>
@@ -1157,19 +1207,19 @@ def get_city_categories():
 
 def main():
     """메인 함수"""
-    # 제목을 블록으로 표시
+    # 제목을 강한 카드로 표시
     st.markdown("""
-    <div class="weather-title">
-        <h1 style="margin: 0; color: #2c3e50; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+    <div class="strong-card">
+        <h1 style="margin: 0; color: #2c3e50; text-shadow: 3px 3px 6px rgba(0,0,0,0.4); font-size: 2.5rem;">
             🌤️ 한국 날씨 정보
         </h1>
     </div>
     """, unsafe_allow_html=True)
     
-    # 설명 텍스트를 블록으로 표시
+    # 설명 텍스트를 강한 카드로 표시
     st.markdown("""
-    <div class="weather-subtitle">
-        <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+    <div class="strong-subcard">
+        <h3 style="margin: 0; color: #34495e; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-size: 1.3rem;">
             한국의 모든 도시 날씨를 실시간으로 확인하세요!
         </h3>
     </div>
@@ -2181,7 +2231,10 @@ def main():
                 else:
                     # 구가 있는 시 - 구를 먼저 선택
                     district_type = first_key  # 구, 시, 군 중 하나
-                    district_list = list(districts.keys())  # 실제 구/군/시 이름들
+                    if isinstance(districts, dict):
+                        district_list = list(districts.keys())  # 실제 구/군/시 이름들
+                    else:
+                        district_list = districts  # 이미 리스트인 경우
                     
                     selected_district = st.sidebar.selectbox(
                         f"🏘️ {district_type}을 선택하세요:",
@@ -2274,37 +2327,76 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
-        ### 📍 지원하는 모든 지역 (동/읍/면까지 완전 지원)
-        - **특별시/광역시**: 서울(25개 구의 모든 동), 부산(16개 구의 모든 동), 대구(8개 구의 모든 동), 인천(10개 구의 모든 동), 광주(5개 구의 모든 동), 대전(5개 구의 모든 동), 울산(5개 구의 모든 동), 세종
-        - **경기도**: 수원(4개 구의 모든 동), 성남(3개 구의 모든 동), 용인(3개 구의 모든 동), 안양(2개 구의 모든 동), 천안(2개 구의 모든 동) 등 28개 시/군의 모든 읍/면
-        - **강원도**: 춘천, 원주, 강릉, 속초, 동해, 태백, 평창, 정선, 홍천, 횡성, 영월, 철원, 화천, 양구, 인제, 고성, 양양의 모든 읍/면
-        - **충청북도**: 청주(4개 구의 모든 동), 충주, 제천, 보은, 옥천, 영동, 증평, 진천, 괴산, 음성, 단양의 모든 읍/면
-        - **충청남도**: 천안(2개 구의 모든 동), 공주, 보령, 아산, 서산, 논산, 계룡, 당진, 금산, 부여, 서천, 청양, 홍성, 예산, 태안의 모든 읍/면
-        - **전라북도**: 전주(2개 구의 모든 동), 군산, 익산, 정읍, 남원, 김제, 완주, 진안, 무주, 장수, 임실, 순창, 고창, 부안의 모든 읍/면
-        - **전라남도**: 목포(모든 동), 여수, 순천, 나주, 광양, 담양, 곡성, 구례, 고흥, 보성, 화순, 장흥, 강진, 해남, 영암, 무안, 함평, 영광, 장성, 완도, 진도, 신안의 모든 읍/면
-        - **경상북도**: 포항(2개 구의 모든 읍/면), 경주, 김천, 안동, 구미, 영주, 영천, 상주, 문경, 경산, 군위, 의성, 청송, 영양, 영덕, 청도, 고령, 성주, 칠곡, 예천, 봉화, 울진, 울릉의 모든 읍/면
-        - **경상남도**: 창원(5개 구의 모든 동), 진주, 통영, 사천, 김해, 밀양, 거제, 양산, 의령, 함안, 창녕, 고성, 남해, 하동, 산청, 함양, 거창, 합천의 모든 읍/면
-        - **제주특별자치도**: 제주, 서귀포의 모든 읍/면
+        st.markdown("""
+        <div class="main-container">
+            <div class="weather-subtitle">
+                <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                    📍 지원하는 모든 지역 (동/읍/면까지 완전 지원)
+                </h3>
+            </div>
+            <div class="metric-card">
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>특별시/광역시</strong>: 서울(25개 구의 모든 동), 부산(16개 구의 모든 동), 대구(8개 구의 모든 동), 인천(10개 구의 모든 동), 광주(5개 구의 모든 동), 대전(5개 구의 모든 동), 울산(5개 구의 모든 동), 세종</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>경기도</strong>: 수원(4개 구의 모든 동), 성남(3개 구의 모든 동), 용인(3개 구의 모든 동), 안양(2개 구의 모든 동), 천안(2개 구의 모든 동) 등 28개 시/군의 모든 읍/면</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>강원도</strong>: 춘천, 원주, 강릉, 속초, 동해, 태백, 평창, 정선, 홍천, 횡성, 영월, 철원, 화천, 양구, 인제, 고성, 양양의 모든 읍/면</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>충청북도</strong>: 청주(4개 구의 모든 동), 충주, 제천, 보은, 옥천, 영동, 증평, 진천, 괴산, 음성, 단양의 모든 읍/면</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>충청남도</strong>: 천안(2개 구의 모든 동), 공주, 보령, 아산, 서산, 논산, 계룡, 당진, 금산, 부여, 서천, 청양, 홍성, 예산, 태안의 모든 읍/면</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>전라북도</strong>: 전주(2개 구의 모든 동), 군산, 익산, 정읍, 남원, 김제, 완주, 진안, 무주, 장수, 임실, 순창, 고창, 부안의 모든 읍/면</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>전라남도</strong>: 목포(모든 동), 여수, 순천, 나주, 광양, 담양, 곡성, 구례, 고흥, 보성, 화순, 장흥, 강진, 해남, 영암, 무안, 함평, 영광, 장성, 완도, 진도, 신안의 모든 읍/면</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>경상북도</strong>: 포항(2개 구의 모든 읍/면), 경주, 김천, 안동, 구미, 영주, 영천, 상주, 문경, 경산, 군위, 의성, 청송, 영양, 영덕, 청도, 고령, 성주, 칠곡, 예천, 봉화, 울진, 울릉의 모든 읍/면</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>경상남도</strong>: 창원(5개 구의 모든 동), 진주, 통영, 사천, 김해, 밀양, 거제, 양산, 의령, 함안, 창녕, 고성, 남해, 하동, 산청, 함양, 거창, 합천의 모든 읍/면</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• <strong>제주특별자치도</strong>: 제주, 서귀포의 모든 읍/면</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        ### 💡 사용 팁
-        - 드롭박스로 지역을 단계별로 선택한 후 "선택한 지역 검색" 버튼 사용
-        - 구체적인 구/군/시까지 선택하면 더 정확한 날씨 정보 제공
-        - 일부 도시는 여러 이름으로 자동 시도됩니다
-        - 검색이 안 되면 인근 도시를 시도해보세요
+        st.markdown("""
+        <div class="main-container">
+            <div class="weather-subtitle">
+                <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                    💡 사용 팁
+                </h3>
+            </div>
+            <div class="metric-card">
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 드롭박스로 지역을 단계별로 선택한 후 "선택한 지역 검색" 버튼 사용</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 구체적인 구/군/시까지 선택하면 더 정확한 날씨 정보 제공</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 일부 도시는 여러 이름으로 자동 시도됩니다</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 검색이 안 되면 인근 도시를 시도해보세요</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        ### 🌤️ 제공 정보
-        - 현재 온도, 체감 온도, 최저/최고 온도
-        - 습도, 기압, 풍속, 풍향
-        - 일출/일몰 시간
-        - 가시거리, 구름량
-        - 강수량, 적설량 (해당시)
-        - 상세 위치 정보
+        st.markdown("""
+        <div class="main-container">
+            <div class="weather-subtitle">
+                <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                    🌤️ 제공 정보
+                </h3>
+            </div>
+            <div class="metric-card">
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 현재 온도, 체감 온도, 최저/최고 온도</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 습도, 기압, 풍속, 풍향</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 일출/일몰 시간</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 가시거리, 구름량</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 강수량, 적설량 (해당시)</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 상세 위치 정보</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        ### 💡 사용 팁
-        - 직접 입력: "서울", "부산", "대전" 등 한글로 입력
-        - 버튼 클릭: 왼쪽 사이드바의 도시 버튼들을 클릭
-        - 더 많은 도시: 직접 입력으로 200개 이상의 도시 지원
-        """)
+        st.markdown("""
+        <div class="main-container">
+            <div class="weather-subtitle">
+                <h3 style="margin: 0; color: #34495e; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                    💡 사용 팁
+                </h3>
+            </div>
+            <div class="metric-card">
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 직접 입력: "서울", "부산", "대전" 등 한글로 입력</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 버튼 클릭: 왼쪽 사이드바의 도시 버튼들을 클릭</p>
+                <p style="color: #34495e; margin: 0.5rem 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">• 더 많은 도시: 직접 입력으로 200개 이상의 도시 지원</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
